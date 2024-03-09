@@ -6,6 +6,7 @@ const openModal = () => {
 //This one is the opposite, it simply remove the 'active' class making the opacity 0, and the Z-Index to 0.
 const closeModal = () => {
   document.getElementById("modal").classList.remove("active");
+  clearFields();
 };
 
 const tempClient = {
