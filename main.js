@@ -59,6 +59,14 @@ const createClient = (client) => {
 /* 
 !Layout interaction
 */
+
+const clearFields = () => {
+    document.getElementById("js-client-name").value = "";
+    document.getElementById("js-client-email").value = "";
+    document.getElementById("js-client-phone").value = "";
+    document.getElementById("js-client-city").value = "";
+}
+
 //Basically a function that checks if all the requirements ware fulfilled.
 const isValidField = () => {
   //This reportValidity() method returns true when all the html required elements were fulfilled, and false in case of at least one weren't
@@ -74,10 +82,8 @@ const saveClient = () => {
       city: document.getElementById("js-client-city").value,
     };
     createClient(client);
-    document.getElementById("js-client-name").value = "";
-    document.getElementById("js-client-email").value = "";
-    document.getElementById("js-client-phone").value = "";
-    document.getElementById("js-client-city").value = "";
+    clearFields();
+    closeModal();
   }
   console.log(readClient());
 };
