@@ -9,12 +9,6 @@ const closeModal = () => {
   clearFields();
 };
 
-const tempClient = {
-  name: "Kaynan",
-  email: "kaynan@gmail.com",
-  phone: 4223520903,
-  city: "são paulo",
-};
 //localStorage functions:
 //This "?? []" means that if there is no db_client on the localStorage the value'll be an empty array, so the push method works properly.
 const getLocalStorage = () =>
@@ -62,11 +56,11 @@ const createClient = (client) => {
 */
 
 const clearFields = () => {
-    document.getElementById("js-client-name").value = "";
-    document.getElementById("js-client-email").value = "";
-    document.getElementById("js-client-phone").value = "";
-    document.getElementById("js-client-city").value = "";
-}
+  document.getElementById("js-client-name").value = "";
+  document.getElementById("js-client-email").value = "";
+  document.getElementById("js-client-phone").value = "";
+  document.getElementById("js-client-city").value = "";
+};
 
 //Basically a function that checks if all the requirements ware fulfilled.
 const isValidField = () => {
@@ -77,7 +71,7 @@ const isValidField = () => {
 const saveClient = () => {
   if (isValidField()) {
     const client = {
-      nome: document.getElementById("js-client-name").value,
+      name: document.getElementById("js-client-name").value,
       email: document.getElementById("js-client-email").value,
       phone: document.getElementById("js-client-phone").value,
       city: document.getElementById("js-client-city").value,
@@ -85,9 +79,41 @@ const saveClient = () => {
     createClient(client);
     clearFields();
     closeModal();
+    updateTable();
   }
   console.log(readClient());
 };
+
+//This function insert an html based on the client data.
+const createRow = (client) => {
+  const newRow = document.createElement("tr");
+  newRow.innerHTML = `
+  <td>${client.name}</td>
+  <td>${client.email}</td>
+  <td>${client.phone}</td>
+  <td>${client.city}</td>
+  <td>
+      <button type="button" class="button green">editar</button>
+      <button type="button" class="button red">excluir</button>
+  </td>
+  `;
+  document.querySelector("#js-clients-table>tbody").appendChild(newRow);
+};
+
+//This function clears the entire table, preventing that the rows get duplicated.
+const clearTable = () => {
+  const rows = document.querySelectorAll("#js-clients-table>tbody tr")
+  rows.forEach(row => row.innerHTML = '');
+}
+
+//This function first read all the clients saved on the local storage, and then clear the entire table, finally creating new rows adding the new client and maintaining the previous ones.
+const updateTable = () => {
+  const db_client = readClient();
+  clearTable();
+  db_client.forEach(createRow);
+};
+
+updateTable();
 
 /* 
 !EVENTS */
