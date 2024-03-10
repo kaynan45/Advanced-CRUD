@@ -85,7 +85,7 @@ const saveClient = () => {
 };
 
 //This function insert an html based on the client data.
-const createRow = (client) => {
+const createRow = (client, index) => {
   const newRow = document.createElement("tr");
   newRow.innerHTML = `
   <td>${client.name}</td>
@@ -93,8 +93,8 @@ const createRow = (client) => {
   <td>${client.phone}</td>
   <td>${client.city}</td>
   <td>
-      <button type="button" class="button green">editar</button>
-      <button type="button" class="button red">excluir</button>
+      <button type="button" class="button green" id="edit-${index}">Edit</button>
+      <button type="button" class="button red" id="delete-${index}">Delete</button>
   </td>
   `;
   document.querySelector("#js-clients-table>tbody").appendChild(newRow);
@@ -102,9 +102,9 @@ const createRow = (client) => {
 
 //This function clears the entire table, preventing that the rows get duplicated.
 const clearTable = () => {
-  const rows = document.querySelectorAll("#js-clients-table>tbody tr")
-  rows.forEach(row => row.innerHTML = '');
-}
+  const rows = document.querySelectorAll("#js-clients-table>tbody tr");
+  rows.forEach((row) => (row.innerHTML = ""));
+};
 
 //This function first read all the clients saved on the local storage, and then clear the entire table, finally creating new rows adding the new client and maintaining the previous ones.
 const updateTable = () => {
@@ -114,6 +114,22 @@ const updateTable = () => {
 };
 
 updateTable();
+
+const editDelete = (event) => {
+  if (event.target.type === "button") {
+
+    //Here we're using the destruction to create two variables on the array created by "event.target.id.split('-')".The first (action) will store what button is been created, and the second (index) will store witch one of the multiple possibles buttons was clicked, in another words, taking the index of the clicked button.
+
+    const [action, index] = event.target.id.split('-'); //This .split is transforming the id into an array, separating the values with the given "-".
+
+    if (action === 'edit') {
+      console.log('editing')
+    } else {
+      console.log('deleting')
+    }
+    
+  }
+};
 
 /* 
 !EVENTS */
@@ -127,3 +143,7 @@ document.getElementById("modalClose").addEventListener("click", closeModal);
 
 //This event listen when the save button is clicked, and runs the saveClient function
 document.getElementById("js-save-button").addEventListener("click", saveClient);
+
+document
+  .querySelector("#js-clients-table>tbody")
+  .addEventListener("click", editDelete);
