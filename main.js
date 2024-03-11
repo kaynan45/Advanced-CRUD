@@ -36,6 +36,7 @@ const updateClient = (index, client) => {
   db_client[index] = client;
   //And finally we set this new array to the localStorage again
   setLocalStorage(db_client);
+  return true;
 };
 
 //CRUD [READ]
@@ -68,6 +69,9 @@ const isValidField = () => {
   return document.getElementById("form").reportValidity();
 };
 
+let editing = false;
+let currentIndex;
+
 const saveClient = () => {
   if (isValidField()) {
     const client = {
@@ -76,18 +80,17 @@ const saveClient = () => {
       phone: document.getElementById("js-client-phone").value,
       city: document.getElementById("js-client-city").value,
     };
-    let index = document.getElementById("js-client-name").dataset.index; //The value of it is the string "new".
-    if (index === "new") {
-      console.log(index);
+
+    if (!editing) {
       createClient(client);
-      clearFields();
-      closeModal();
-      updateTable();
     } else {
-      updateClient(index, client);
-      updateTable();
-      closeModal();
+      updateClient(currentIndex, client);
+      editing = false;
+      currentIndex = null;
     }
+    clearFields();
+    closeModal();
+    updateTable();
   }
   console.log(readClient());
 };
@@ -111,7 +114,7 @@ const createRow = (client, index) => {
 //This function clears the entire table, preventing that the rows get duplicated.
 const clearTable = () => {
   const rows = document.querySelectorAll("#js-clients-table>tbody tr");
-  rows.forEach((row) => (row.innerHTML = ""));
+  rows.forEach(row => row.parentNode.removeChild(row));
 };
 
 //This function first read all the clients saved on the local storage, and then clear the entire table, finally creating new rows adding the new client and maintaining the previous ones.
@@ -121,33 +124,40 @@ const updateTable = () => {
   db_client.forEach(createRow);
 };
 
+//[3]
 const fillFields = (client) => {
   document.getElementById("js-client-name").value = client.name;
   document.getElementById("js-client-email").value = client.email;
   document.getElementById("js-client-phone").value = client.phone;
   document.getElementById("js-client-city").value = client.city;
   document.getElementById("js-client-name").dataset.index = client.index;
+  editing = true;
 };
 
+//[2]
 const editClient = (index) => {
   const client = readClient()[index];
   client.index = index;
   fillFields(client);
+  currentIndex = index;
   openModal();
 };
 
+//[1]
 const editDelete = (event) => {
   if (event.target.type === "button") {
     //Here we're using the destruction to create two variables on the array created by "event.target.id.split('-')".The first (action) will store what button is been created, and the second (index) will store witch one of the multiple possibles buttons was clicked, in another words, taking the index of the clicked button.
 
-    const [action, index] = event.target.id.split("-"); //This .split is transforming the id into an array, separating the values with the given "-".
+    let [action, index] = event.target.id.split("-"); //This .split is transforming the id into an array, separating the values with the given "-".
 
     if (action === "edit") {
       editClient(index);
     } else {
       const client = readClient()[index];
-      const response = confirm(`Do you wan't to delete the client ${client.name}?`)
-      if(response) {
+      const response = confirm(
+        `Do you wan't to delete the client ${client.name}?`
+      );
+      if (response) {
         deleteClient(index);
         updateTable();
       }
