@@ -76,15 +76,23 @@ const saveClient = () => {
       phone: document.getElementById("js-client-phone").value,
       city: document.getElementById("js-client-city").value,
     };
-    createClient(client);
-    clearFields();
-    closeModal();
-    updateTable();
+    let index = document.getElementById("js-client-name").dataset.index; //The value of it is the string "new".
+    if (index === "new") {
+      console.log(index);
+      createClient(client);
+      clearFields();
+      closeModal();
+      updateTable();
+    } else {
+      updateClient(index, client);
+      updateTable();
+      closeModal();
+    }
   }
   console.log(readClient());
 };
 
-//This function insert an html based on the client data.
+//This function insert an html based on the client data. And uses the index provided by the forEach (line: 113) to create an pseudo id for the client, making then a form to distingue each button.
 const createRow = (client, index) => {
   const newRow = document.createElement("tr");
   newRow.innerHTML = `
@@ -113,23 +121,41 @@ const updateTable = () => {
   db_client.forEach(createRow);
 };
 
-updateTable();
+const fillFields = (client) => {
+  document.getElementById("js-client-name").value = client.name;
+  document.getElementById("js-client-email").value = client.email;
+  document.getElementById("js-client-phone").value = client.phone;
+  document.getElementById("js-client-city").value = client.city;
+  document.getElementById("js-client-name").dataset.index = client.index;
+};
+
+const editClient = (index) => {
+  const client = readClient()[index];
+  client.index = index;
+  fillFields(client);
+  openModal();
+};
 
 const editDelete = (event) => {
   if (event.target.type === "button") {
-
     //Here we're using the destruction to create two variables on the array created by "event.target.id.split('-')".The first (action) will store what button is been created, and the second (index) will store witch one of the multiple possibles buttons was clicked, in another words, taking the index of the clicked button.
 
-    const [action, index] = event.target.id.split('-'); //This .split is transforming the id into an array, separating the values with the given "-".
+    const [action, index] = event.target.id.split("-"); //This .split is transforming the id into an array, separating the values with the given "-".
 
-    if (action === 'edit') {
-      console.log('editing')
+    if (action === "edit") {
+      editClient(index);
     } else {
-      console.log('deleting')
+      const client = readClient()[index];
+      const response = confirm(`Do you wan't to delete the client ${client.name}?`)
+      if(response) {
+        deleteClient(index);
+        updateTable();
+      }
     }
-    
   }
 };
+
+updateTable();
 
 /* 
 !EVENTS */
