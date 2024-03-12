@@ -36,7 +36,6 @@ const updateClient = (index, client) => {
   db_client[index] = client;
   //And finally we set this new array to the localStorage again
   setLocalStorage(db_client);
-  return true;
 };
 
 //CRUD [READ]
