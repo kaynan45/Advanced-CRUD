@@ -182,3 +182,4 @@ document.getElementById("js-save-button").addEventListener("click", saveClient);
 document
   .querySelector("#js-clients-table>tbody")
   .addEventListener("click", editDelete);
+  
